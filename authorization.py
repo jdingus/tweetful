@@ -17,9 +17,18 @@ def get_request_token():
     request_secret = credentials.get("oauth_token_secret")[0]   # pull token secret from dict and store
     return request_token, request_secret
 
-
+def get_user_authorization(request_token):
+    """
+    Redirect the user to authorize the client, and get them to give us the
+    verification code.
+    """
+    authorize_url = AUTHORIZE_URL
+    authorize_url = authorize_url.format(request_token=request_token) # auth url + request token => spec url to get PIN
+    print 'Please go here and authorize: ' + authorize_url
+    return raw_input('Please input the verifier: ')
 
 def authorize():
 	""" A complete OAuth authentication flow """
 	request_token, request_secret = get_request_token()
-	print request_token, request_secret
+	verifier = get_user_authorization(request_token)
+	# print request_token, request_secret
