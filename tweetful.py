@@ -1,6 +1,7 @@
 import authorization
 import requests
 from urls import TIMELINE_URL
+# import json
 
 def main():
 	""" Main function """
