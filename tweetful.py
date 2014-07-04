@@ -25,10 +25,15 @@ def print_json_file(json_file):
 	print "-----" * 4
 	print "\n"
 
-def tweet(tw_text):
+def tweet(tweet_text):
 	pass
 	""" Perform a tweet using TwitterAPI based on passed tw_text """
-	logging.info("Attempting to tweet '{}'".format(tw_text))
+	logging.info("Attempting to tweet '{}'".format(tweet_text))
+	if len(tweet_text) > 140:
+		print 'Tweets cannot be greater than 140 characters!'
+		quit()
+	response = tweet_text
+	return response
 
 def get_trends(woeid):
 	"""
@@ -108,9 +113,12 @@ def main():
 	command = arguments.pop("command") # Identify which command sent from command line
 
 	if command == 'tweet':
-		woeid, trends, location = get_trends(**arguments)
-		print "Returning Twitter trend info for: {}".format(location)
-		print "*****" * 10
+		response = tweet(**arguments)
+		if len(response)==0:
+			print "No text was passed to Tweet!"
+		print response
+		# print "Returning Twitter trend info for: {}".format(location)
+		# print "*****" * 10
 
 	"""
 	Trend Argument 
@@ -128,7 +136,7 @@ def main():
 		i=1
 		for trend in trends:
 			trend.encode('utf-8','ignore')
-			print "Trend#{} : {}".format(str(i),trend)
+			print "Trend #{} : {}".format(str(i),trend)
 			i+=1
 
 
