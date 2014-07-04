@@ -52,7 +52,10 @@ def get_trends(woeid):
 
 	""" Parse out the 'names' from response and return names[] """
 	trends,location = parse_trends('trends.json')
-
+	
+	[x.encode('UTF-8') for x in trends]
+	location = location.encode('utf-8','ignore')
+	
 	return woeid,trends,location
 
 def parse_trends(json_file):
@@ -96,14 +99,18 @@ def make_parser():
     return parser
 
 def main():
+	# print_json_file('trends.json')
+	# raise SystemExit
 	""" Main function """
 	parser = make_parser()
 	arguments = parser.parse_args(sys.argv[1:])
 	arguments = vars(arguments)
 	command = arguments.pop("command") # Identify which command sent from command line
 
-	# if command == 'tweet':
-	# 	pass
+	if command == 'tweet':
+		woeid, trends, location = get_trends(**arguments)
+		print "Returning Twitter trend info for: {}".format(location)
+		print "*****" * 10
 
 	"""
 	Trend Argument 
@@ -115,11 +122,13 @@ def main():
 	
 	if command == 'trend':
 		woeid, trends, location = get_trends(**arguments)
-		print "Returning Twitter trend info for: {}".format(location)
+		print location
+		# print "Returning Twitter trend info for: {}".format(location)
 		print "*****" * 10
 		i=1
 		for trend in trends:
-			print "Trend#{}: {}".format(str(i),trend)
+			trend.encode('utf-8','ignore')
+			print "Trend#{} : {}".format(str(i),trend)
 			i+=1
 
 
