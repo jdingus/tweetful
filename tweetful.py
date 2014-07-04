@@ -50,9 +50,9 @@ def get_trends(woeid):
 		json.dump(response, outfile)
 
 	""" Parse out the 'names' from response and return names[] """
-	trends = parse_trends('trends.json')
+	trends,location = parse_trends('trends.json')
 
-	return woeid,trends
+	return woeid,trends,location
 
 def parse_trends(json_file):
 	""" Parse out the 'names' from response and return trends[] """
@@ -64,7 +64,8 @@ def parse_trends(json_file):
 			for item in json_data[0]['trends']:
 				trend_name = item['name']
 				trends.append(trend_name)
-	return trends
+			location = json_data[0]['locations'][0]['name']
+	return trends,location
 
 
 def main():
@@ -72,7 +73,11 @@ def main():
 
 	woeid = 2379574 # Chicago
 	# woeid = 2427032 # Indy
-	get_trends(woeid)
+	woeid,trends,location = get_trends(woeid)
+	print_json_file('trends.json')
+	print woeid
+	print location
+
 
 	"""
 	Steps:
