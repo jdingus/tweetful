@@ -81,7 +81,8 @@ def make_parser():
     logging.debug("Constructing trend subparser")
     trend_parser = subparsers.add_parser("trend", help="Get a twitter trend by WOEID location")
     trend_parser.add_argument("woeid"
-    	, default=1, nargs="?", help="The WOEID of the location to query"+ "\n" + "Go here to look up a WOEID: "+
+    	, default=1, nargs="?", help="The WOEID of the location to query:"+ 
+    	"     Go here to look up a WOEID: "+
 	"http://woeid.rosselliot.co.nz/")
     trend_parser.set_defaults(command="trend")
 
