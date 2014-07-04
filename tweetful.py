@@ -7,8 +7,8 @@ import sys # Access argv variable
 from urls import * # Location of endpoints for TwitterAPI
 from collections import OrderedDict # Used in JSON printing
 
-# Set the log output file, and the log level
-logging.basicConfig(filename="output.log", level=logging.INFO)
+# Set the log outtrend file, and the log level
+logging.basicConfig(filename="outtrend.log", level=logging.INFO)
 
 def print_json_file(json_file):
 	""" 
@@ -72,32 +72,55 @@ def parse_trends(json_file):
 def make_parser():
     """ Construct the command line parser """
     logging.info("Constructing parser")
-    description = "Store and retrieve snippets of text"
+    description = "TwitterAPI command line implementation, tweet or get trend by WOEID location"
     parser = argparse.ArgumentParser(description=description)
 
     subparsers = parser.add_subparsers(help="Available commands")
 
-    # Subparser for the put command
-    logging.debug("Constructing put subparser")
-    put_parser = subparsers.add_parser("put", help="Store a snippet")
-    put_parser.add_argument("name", help="The name of the snippet")
-    put_parser.add_argument("snippet", help="The snippet text")
-    put_parser.add_argument("filename", default="snippets.csv", nargs="?",
-                            help="The snippet filename")
-    put_parser.set_defaults(command="put")
+    # Subparser for the trend command
+    logging.debug("Constructing trend subparser")
+    trend_parser = subparsers.add_parser("trend", help="Get a twitter trend by WOEID location")
+    trend_parser.add_argument("woeid"
+    	, default=1, nargs="?", help="The WOEID of the location to query"+ "\n" + "Go here to look up a WOEID: "+
+	"http://woeid.rosselliot.co.nz/")
+    trend_parser.set_defaults(command="trend")
+
+        # Subparser for the tweet command
+    logging.debug("Constructing tweet subparser")
+    tweet_parser = subparsers.add_parser("tweet", help="Make a tweet from command line")
+    tweet_parser.add_argument("tweet_text"
+    	, default='', nargs="?", help="Text you want to tweet, max 140 characters!")
+    tweet_parser.set_defaults(command="tweet")
 
     return parser
 
 def main():
 	""" Main function """
+	parser = make_parser()
+	arguments = parser.parse_args(sys.argv[1:])
+	arguments = vars(arguments)
+	command = arguments.pop("command") # Identify which command sent from command line
+
+	# if command == 'tweet':
+	# 	pass
+
+	"""
+	Trend Argument 
 
 	woeid = 2379574 # Chicago
-	# woeid = 2427032 # Indy
-	woeid,trends,location = get_trends(woeid)
-	print woeid
-	print location
-	for trend in trends:
-		print trend
+	woeid = 2427032 # Indy
+
+	"""
+	
+	if command == 'trend':
+		woeid, trends, location = get_trends(**arguments)
+		print "Returning Twitter trend info for: {}".format(location)
+		print "*****" * 10
+		i=1
+		for trend in trends:
+			print "Trend#{}: {}".format(str(i),trend)
+			i+=1
+
 
 
 
