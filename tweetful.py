@@ -39,6 +39,7 @@ def get_trends(woeid):
 	"""
 	# Chicago, Cook County 			WOEID: 2379574
 	# Indianapolis, Marion County 	WOEID: 2427032
+	logging.info("Getting trends info from WOEID: '{}'".format(woeid))
 	
 	oauth = authorization.authorize()
 	query = "?id="+str(woeid)
@@ -56,6 +57,7 @@ def get_trends(woeid):
 
 def parse_trends(json_file):
 	""" Parse out the 'names' from response and return trends[] """
+	logging.info("Parsing the JSON file: '{}'".format(json_file))
 	trends = []
 	with open(json_file) as json_file:
 		json_data = json.load(json_file)
@@ -67,6 +69,24 @@ def parse_trends(json_file):
 			location = json_data[0]['locations'][0]['name']
 	return trends,location
 
+def make_parser():
+    """ Construct the command line parser """
+    logging.info("Constructing parser")
+    description = "Store and retrieve snippets of text"
+    parser = argparse.ArgumentParser(description=description)
+
+    subparsers = parser.add_subparsers(help="Available commands")
+
+    # Subparser for the put command
+    logging.debug("Constructing put subparser")
+    put_parser = subparsers.add_parser("put", help="Store a snippet")
+    put_parser.add_argument("name", help="The name of the snippet")
+    put_parser.add_argument("snippet", help="The snippet text")
+    put_parser.add_argument("filename", default="snippets.csv", nargs="?",
+                            help="The snippet filename")
+    put_parser.set_defaults(command="put")
+
+    return parser
 
 def main():
 	""" Main function """
@@ -74,9 +94,11 @@ def main():
 	woeid = 2379574 # Chicago
 	# woeid = 2427032 # Indy
 	woeid,trends,location = get_trends(woeid)
-	print_json_file('trends.json')
 	print woeid
 	print location
+	for trend in trends:
+		print trend
+
 
 
 	"""
