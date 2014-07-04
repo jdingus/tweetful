@@ -3,4 +3,4 @@ env
 *.json
 *.log
 secret.py
-access.json
+secret2.py
