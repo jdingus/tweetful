@@ -11,4 +11,4 @@ example:
     
 >>python tweetful.py trends 2487889
     Will return latest trending tweets (Top 10) from that WOEID (location)
-    trends -h --> to see link to lookup WOEID
+    trend -h --> to see link to lookup WOEID
