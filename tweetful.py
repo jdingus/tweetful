@@ -6,6 +6,7 @@ import argparse
 import sys # Access argv variable
 from urls import * # Location of endpoints for TwitterAPI
 from collections import OrderedDict # Used in JSON printing
+import urllib
 
 # Set the log outtrend file, and the log level
 logging.basicConfig(filename="outtrend.log", level=logging.INFO)
@@ -26,14 +27,19 @@ def print_json_file(json_file):
 	print "\n"
 
 def tweet(tweet_text):
-	pass
-	""" Perform a tweet using TwitterAPI based on passed tw_text """
+	""" Perform a tweet using TwitterAPI based on passed tweet_text """
 	logging.info("Attempting to tweet '{}'".format(tweet_text))
+
 	if len(tweet_text) > 140:
 		print 'Tweets cannot be greater than 140 characters!'
 		quit()
-	response = tweet_text
-	return response
+	
+	oauth = authorization.authorize()
+	url_tweet = TWEET_URL+"?status=" + urllib.quote(tweet_text)
+	url = url_tweet
+	response = requests.post(url, auth=oauth)
+	response = response.json()
+	return response,tweet_text
 
 def get_trends(woeid):
 	"""
@@ -50,7 +56,9 @@ def get_trends(woeid):
 	query = "?id="+str(woeid)
 	url = TRENDS_URL+query
 	response = requests.get(url, auth=oauth)
+	print response.encoding
 	response = response.json()
+
 	
 	with open('trends.json', 'w') as outfile: # Save to file
 		json.dump(response, outfile)
@@ -58,7 +66,7 @@ def get_trends(woeid):
 	""" Parse out the 'names' from response and return names[] """
 	trends,location = parse_trends('trends.json')
 	
-	[x.encode('UTF-8') for x in trends]
+	[x.encode('UTF-8','ignore') for x in trends]
 	location = location.encode('utf-8','ignore')
 	
 	return woeid,trends,location
@@ -113,10 +121,11 @@ def main():
 	command = arguments.pop("command") # Identify which command sent from command line
 
 	if command == 'tweet':
-		response = tweet(**arguments)
+		response,tweet_text = tweet(**arguments)
 		if len(response)==0:
 			print "No text was passed to Tweet!"
 		print response
+		print tweet_text
 		# print "Returning Twitter trend info for: {}".format(location)
 		# print "*****" * 10
 
