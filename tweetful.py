@@ -35,10 +35,13 @@ def tweet(tweet_text):
 		quit()
 	
 	oauth = authorization.authorize()
-	url_tweet = TWEET_URL+"?status=" + urllib.quote(tweet_text)
-	url = url_tweet
+	url = TWEET_URL+"?status=" + urllib.quote(tweet_text)  #urllib.quote encode given text to url friendly
 	response = requests.post(url, auth=oauth)
 	response = response.json()
+
+	with open('tweet.json', 'w') as outfile: # Save to file
+		json.dump(response, outfile)
+
 	return response,tweet_text
 
 def get_trends(woeid):
@@ -56,7 +59,7 @@ def get_trends(woeid):
 	query = "?id="+str(woeid)
 	url = TRENDS_URL+query
 	response = requests.get(url, auth=oauth)
-	print response.encoding
+	# print response.encoding
 	response = response.json()
 
 	
@@ -112,9 +115,9 @@ def make_parser():
     return parser
 
 def main():
-	# print_json_file('trends.json')
-	# raise SystemExit
 	""" Main function """
+	# print_json_file('tweet.json')
+
 	parser = make_parser()
 	arguments = parser.parse_args(sys.argv[1:])
 	arguments = vars(arguments)
@@ -124,22 +127,20 @@ def main():
 		response,tweet_text = tweet(**arguments)
 		if len(response)==0:
 			print "No text was passed to Tweet!"
-		print response
-		print tweet_text
-		# print "Returning Twitter trend info for: {}".format(location)
-		# print "*****" * 10
+		print response['user']['screen_name'] + ' Just tweeted: ' + tweet_text + '!'
 
 	"""
 	Trend Argument 
 
 	woeid = 2379574 # Chicago
 	woeid = 2427032 # Indy
+	woeid = 2487889 # San Diego
 
 	"""
 	
 	if command == 'trend':
 		woeid, trends, location = get_trends(**arguments)
-		print location
+		print 'These are the latest twitter trends for {}'.format(location)
 		# print "Returning Twitter trend info for: {}".format(location)
 		print "*****" * 10
 		i=1
@@ -148,19 +149,6 @@ def main():
 			print "Trend #{} : {}".format(str(i),trend)
 			i+=1
 
-
-
-
-	"""
-	Steps:
-		1.) Construct make_parser() >> -tweet , -trends
-		2.) Get Trends from Twitter by WOEID#
-			> If one item passed will just return that item
-			> If multiple WOEID's pass will return both and compare
-			> Store resulting data to trends.json
-		3.) Perform status update, aka tweet to my user account
-		4.) Make sure to do commits along the way and use error logging
-	"""
 
 if __name__ == "__main__":
 	main()
