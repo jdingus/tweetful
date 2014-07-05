@@ -9,7 +9,7 @@ from collections import OrderedDict # Used in JSON printing
 import urllib
 
 # Set the log outtrend file, and the log level
-logging.basicConfig(filename="outtrend.log", level=logging.INFO)
+logging.basicConfig(filename="output.log", level=logging.INFO)
 
 def print_json_file(json_file):
 	""" 
